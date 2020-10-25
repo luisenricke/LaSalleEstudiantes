@@ -17,4 +17,8 @@ class Estudiante {
         matricula size: 9, blank: false, unique: true
         correo email: true, blank: false, unique: true
     }
+
+    String toString() {
+        return matricula
+    }
 }
