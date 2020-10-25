@@ -5,13 +5,13 @@ class Especializacion {
     String nombre
 
     static belongsTo = [nivelAcademico: NivelAcademico]
-    static hasMany = [historialesAcademicos: HistorialAcademico]
+    static hasMany   = [historialesAcademicos: HistorialAcademico]
 
     static constraints = {
         nombre minSize: 5, blank: false, unique: true
     }
 
     String toString() {
-        return nombre
+        nombre
     }
 }

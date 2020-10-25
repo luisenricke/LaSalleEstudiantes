@@ -2,11 +2,11 @@ package lasalleestudiantes
 
 class HistorialAcademico {
 
-    int semestre
-    Date inscrito_en
-    Date finalizado_en
-    boolean trunco
-    Estudiante estudiante
+    int             semestre
+    Date            inscrito_en
+    Date            finalizado_en
+    boolean         trunco
+    Estudiante      estudiante
     Especializacion especializacion
 
     static belongsTo = [Estudiante, Especializacion]
@@ -17,6 +17,6 @@ class HistorialAcademico {
     }
 
     String toString() {
-        return estudiante.toString() + "-" + especializacion.toString()
+        estudiante.toString() + "-" + especializacion.toString()
     }
 }

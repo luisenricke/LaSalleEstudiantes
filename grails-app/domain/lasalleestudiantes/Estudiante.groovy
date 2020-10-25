@@ -8,7 +8,7 @@ class Estudiante {
     String matricula
     String correo
 
-    static hasMany = [historialAcademico: HistorialAcademico]
+    static hasMany = [historialesAcademicos: HistorialAcademico]
 
     static constraints = {
         nombre size: 2..70, blank: false
@@ -19,6 +19,6 @@ class Estudiante {
     }
 
     String toString() {
-        return matricula
+        nombre + paterno + materno + " - " + matricula
     }
 }
