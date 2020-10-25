@@ -14,11 +14,11 @@ class Estudiante {
         nombre size: 2..70, blank: false
         paterno size: 2..70, blank: false
         materno size: 2..70, blank: false
-        matricula size: 9, blank: false, unique: true
+        matricula size: 9..9, blank: false, unique: true
         correo email: true, blank: false, unique: true
     }
 
     String toString() {
-        nombre + paterno + materno + " - " + matricula
+        matricula
     }
 }
