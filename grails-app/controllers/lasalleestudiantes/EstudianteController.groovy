@@ -1,5 +1,6 @@
 package lasalleestudiantes
 
+import grails.converters.JSON
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 
@@ -11,7 +12,7 @@ class EstudianteController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond estudianteService.list(params), model:[estudianteCount: estudianteService.count()]
+        respond estudianteService.list(params), model: [estudianteCount: estudianteService.count()]
     }
 
     def show(Long id) {
@@ -31,7 +32,7 @@ class EstudianteController {
         try {
             estudianteService.save(estudiante)
         } catch (ValidationException e) {
-            respond estudiante.errors, view:'create'
+            respond estudiante.errors, view: 'create'
             return
         }
 
@@ -57,7 +58,7 @@ class EstudianteController {
         try {
             estudianteService.save(estudiante)
         } catch (ValidationException e) {
-            respond estudiante.errors, view:'edit'
+            respond estudiante.errors, view: 'edit'
             return
         }
 
@@ -66,7 +67,7 @@ class EstudianteController {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), estudiante.id])
                 redirect estudiante
             }
-            '*'{ respond estudiante, [status: OK] }
+            '*' { respond estudiante, [status: OK] }
         }
     }
 
@@ -81,9 +82,9 @@ class EstudianteController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), id])
-                redirect action:"index", method:"GET"
+                redirect action: "index", method: "GET"
             }
-            '*'{ render status: NO_CONTENT }
+            '*' { render status: NO_CONTENT }
         }
     }
 
@@ -93,7 +94,29 @@ class EstudianteController {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), params.id])
                 redirect action: "index", method: "GET"
             }
-            '*'{ render status: NOT_FOUND }
+            '*' { render status: NOT_FOUND }
         }
+    }
+
+    def updateSelect(value) {
+        def especializacion = NivelAcademico.especializaciones.find { it.id == value.id }
+        render especializacion as JSON // or use respond concentrations if you upgrade to 2.3
+    }
+
+    def ajaxGetEspecializacion = {
+        def academia = NivelAcademico.findById.find(params.id)
+        List typeList = academia.especializaciones.nombre
+        def especializacionesList = [type: typeList]
+        render especializacionesList as JSON
+    }
+
+    def academiaSelected = {
+        def academia = NivelAcademico.findById(params.id)
+        render g.select(
+                optionKey: 'id',
+                from: academia.especializaciones,
+                id: 'especializacion',
+                name: 'especializacion'
+        )
     }
 }

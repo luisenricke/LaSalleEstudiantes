@@ -29,10 +29,43 @@
                 <fieldset class="form">
                     <f:all bean="estudiante"/>
                 </fieldset>
+
+                <g:set var="academia" bean="nivelAcademicoService"/>
+                <g:select
+                    id="nivelAcademico"
+                    name="nivelAcademico"
+                    noSelection="${['':'- Elige una academia -']}"
+                    from="${academia.list()}"
+                />
+
+                <g:set var="especial" bean="especializacionService"/>
+                <g:select
+                    id="especialidades"
+                    name="especialidades"
+                    noSelection="${['':'- Elige la especialidad -']}"
+                    from="${especial.list()}"
+                />
+
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
                 </fieldset>
             </g:form>
         </div>
     </body>
+
+    <script>
+        $(document).ready(function() {
+            $("#nivelAcademico").change(function() {
+                $.ajax({
+                    url: "/lasalleestudiantes/estudiante/academiaSelected",
+                    data: "id=" + this.value,
+                    cache: false,
+                    success: function(html) {
+                        $("#especializacion").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+
 </html>
