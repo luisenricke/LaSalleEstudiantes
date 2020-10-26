@@ -4,7 +4,7 @@ class NivelAcademico {
 
     String nombre
 
-    static hasMany = [especializaciones: Especializacion]
+    static hasMany = [especializaciones: Especializacion, historialesAcademicos: HistorialAcademico]
 
     static constraints = {
         nombre minSize: 5, blank: false, unique: true

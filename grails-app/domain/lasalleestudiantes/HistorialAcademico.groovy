@@ -8,12 +8,14 @@ class HistorialAcademico {
     boolean         trunco
     Estudiante      estudiante
     Especializacion especializacion
+    NivelAcademico  nivelAcademico
 
-    static belongsTo = [Estudiante, Especializacion]
+    static belongsTo = [Estudiante, Especializacion, NivelAcademico]
 
     static constraints = {
         semestre range: 1..15, blank: false
         finalizado_en nullable: true
+        especializacion nullable: true
     }
 
     String toString() {
