@@ -40,7 +40,7 @@
                     from="${nivelAcademicoService.list()}"
                     optionValue="nombre"
                     optionKey="id"
-                    noSelection="['':' - Elige tu nivel - ']"
+                    noSelection="['':' - Elige el nivel académico - ']"
                     onchange="seleccionNivelAcademia(this.value);"
                     required="required"
                 />
@@ -51,6 +51,15 @@
                      from= "[]"
                      optionKey= "id"
                      noSelection= "['': ' - Elige una especialidad - ']"
+                />
+
+                <g:select
+                    id= "semestre"
+                    name="semestre"
+                    from="${1..15}"
+                    value=""
+                    noSelection="['':' - Elige el semestre - ']"
+                    required="required"
                 />
 
                 <fieldset class="buttons">
