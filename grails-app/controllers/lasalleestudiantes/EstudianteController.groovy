@@ -1,7 +1,10 @@
 package lasalleestudiantes
 
-import grails.converters.JSON
 import grails.validation.ValidationException
+import org.grails.taglib.GrailsTagException
+
+import java.lang.reflect.InvocationTargetException
+
 import static org.springframework.http.HttpStatus.*
 
 class EstudianteController {
@@ -98,25 +101,27 @@ class EstudianteController {
         }
     }
 
-    def updateSelect(value) {
-        def especializacion = NivelAcademico.especializaciones.find { it.id == value.id }
-        render especializacion as JSON // or use respond concentrations if you upgrade to 2.3
-    }
+    def encontrarEspecialidades(Long nivelAcademicoId) {
+        println "id -> ${nivelAcademicoId} "
 
-    def ajaxGetEspecializacion = {
-        def academia = NivelAcademico.findById.find(params.id)
-        List typeList = academia.especializaciones.nombre
-        def especializacionesList = [type: typeList]
-        render especializacionesList as JSON
-    }
+        try {
+            NivelAcademico nivelAcademico = NivelAcademico.get(nivelAcademicoId)
+            def especializaciones = []
+            if (nivelAcademico != null) {
+                especializaciones = Especializacion.findAllByNivelAcademico(nivelAcademico, [order: 'name'])
+            }
 
-    def academiaSelected = {
-        def academia = NivelAcademico.findById(params.id)
-        render g.select(
-                optionKey: 'id',
-                from: academia.especializaciones,
-                id: 'especializacion',
-                name: 'especializacion'
-        )
+            // for (item in especializaciones) println "Especializacion ${item.nombre}"
+
+            render g.select(
+                    id: 'especializacion',
+                    name: 'especializacion',
+                    from: especializaciones,
+                    optionKey: 'id',
+                    noSelection: ['': ' - Elige una especialidad - '])
+        } catch (NullPointerException | GrailsTagException | InvocationTargetException ex) {
+            println "Parametro nulo"
+            render g.select(from: [], optionKey: 'id', noSelection: ['': ' - Elige una especialidad - '])
+        }
     }
 }

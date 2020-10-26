@@ -1,9 +1,13 @@
+<g:set var="nivelAcademicoService" bean="nivelAcademicoService"/>
+<g:set var="especializacionService" bean="especializacionService"/>
 <!DOCTYPE html>
 <html>
     <head>
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'estudiante.label', default: 'Estudiante')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <g:javascript library='jquery' />
+        <r:layoutResources/>
     </head>
     <body>
         <a href="#create-estudiante" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -30,20 +34,23 @@
                     <f:all bean="estudiante"/>
                 </fieldset>
 
-                <g:set var="academia" bean="nivelAcademicoService"/>
                 <g:select
                     id="nivelAcademico"
                     name="nivelAcademico"
-                    noSelection="${['':'- Elige una academia -']}"
-                    from="${academia.list()}"
+                    from="${nivelAcademicoService.list()}"
+                    optionValue="nombre"
+                    optionKey="id"
+                    noSelection="['':' - Elige tu nivel - ']"
+                    onchange="seleccionNivelAcademia(this.value);"
+                    required="required"
                 />
 
-                <g:set var="especial" bean="especializacionService"/>
                 <g:select
-                    id="especialidades"
-                    name="especialidades"
-                    noSelection="${['':'- Elige la especialidad -']}"
-                    from="${especial.list()}"
+                     id= "especializacion"
+                     name= "especializacion"
+                     from= "[]"
+                     optionKey= "id"
+                     noSelection= "['': ' - Elige una especialidad - ']"
                 />
 
                 <fieldset class="buttons">
@@ -51,21 +58,21 @@
                 </fieldset>
             </g:form>
         </div>
-    </body>
 
-    <script>
-        $(document).ready(function() {
-            $("#nivelAcademico").change(function() {
+        <g:javascript>
+            function seleccionNivelAcademia(nivelAcademicoId) {
                 $.ajax({
-                    url: "/lasalleestudiantes/estudiante/academiaSelected",
-                    data: "id=" + this.value,
-                    cache: false,
-                    success: function(html) {
-                        $("#especializacion").html(html);
+                    type: 'POST',
+                    data: { nivelAcademicoId: nivelAcademicoId },
+                    url: '${g.createLink( controller:'estudiante', action:'encontrarEspecialidades')}',
+                    success: function(data,textStatus) {
+                        jQuery('#especializacion').html(data);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        console.log("parametro nulo")
                     }
                 });
-            });
-        });
-    </script>
-
+            }
+        </g:javascript>
+    </body>
 </html>
