@@ -102,14 +102,11 @@ class EstudianteController {
     }
 
     def encontrarEspecialidades(Long nivelAcademicoId) {
-        println "id -> ${nivelAcademicoId} "
+        println "nivelAcademicoId -> ${nivelAcademicoId} "
 
         try {
             NivelAcademico nivelAcademico = NivelAcademico.get(nivelAcademicoId)
-            def especializaciones = []
-            if (nivelAcademico != null) {
-                especializaciones = Especializacion.findAllByNivelAcademico(nivelAcademico, [order: 'name'])
-            }
+            def especializaciones = Especializacion.findAllByNivelAcademico(nivelAcademico, [order: 'name'])
 
             // for (item in especializaciones) println "Especializacion ${item.nombre}"
 
@@ -120,7 +117,6 @@ class EstudianteController {
                     optionKey: 'id',
                     noSelection: ['': ' - Elige una especialidad - '])
         } catch (NullPointerException | GrailsTagException | InvocationTargetException ex) {
-            println "Parametro nulo"
             render g.select(from: [], optionKey: 'id', noSelection: ['': ' - Elige una especialidad - '])
         }
     }
