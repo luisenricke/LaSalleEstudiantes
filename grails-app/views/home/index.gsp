@@ -63,12 +63,13 @@
 
         <p style="text-align:left;margin-top:8px;">En el la url <g:link controller="home" action="register">/register</g:link> contendrá el formulario del registro de los estudiantes de nuevo ingreso. Además se enviará su información por correo de acuse de recibo de la información. Se evaluará los siguientes criterios:</p>
         <ul style="font-style:italic;font-size:95%;">
-            <li>El alumno no debe de estar registrado y si ya se encuentra registrado lanzar un mensaje de alerta</li>
+            <li>El alumno no debe de estar registrado y si ya se encuentra registrado se enviara a una página con un mensaje de alerta</li>
             <li>Tiene que poner un correo válido</li>
-            <li>Tiene que poner su matrícula de 9 dígitos</li>
+            <li>Tiene que poner su matrícula de 9 dígitos y única</li>
             <li>El único semestre válido es el primero</li>
             <li>Tiene que poner una contraseña segura</li>
             <li>Tiene que seleccionar al menos su nivel académico, y si tiene relación con alguna especialidad es requerida</li>
+            <li>Antes de confirmar el registro del alumno, se le envirá una mensaje de confirmación de los datos</li>
         </ul>
 
         <p style="text-align:left;margin-top:8px;">Para las demás tablas se podrá manejar todas las operaciones de un CRUD básico con /{nombre-tabla}/{operacion}/{id}</p>
