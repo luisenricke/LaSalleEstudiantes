@@ -129,7 +129,8 @@
             </fieldset>
 
             <fieldset class="buttons">
-                <g:actionSubmit  name="create" action="save" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                <g:actionSubmit  name="create" action="save" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}"
+                                 onclick="return confirm('${message(code: 'default.button.create.confirm.message', default: '¿Todos los datos están correctos?')}');"/>
             </fieldset>
         </g:form>
     </div>
