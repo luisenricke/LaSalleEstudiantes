@@ -22,6 +22,10 @@
     <div id="create-estudiante-historial" class="content scaffold-create" role="main">
         <h1>Registro de estudiante</h1>
 
+        <g:if test="${error_semestre}">
+            <div class="errors" style="display: block">${error_semestre}</div>
+        </g:if>
+
         <g:if test="${flash.message}">
             <div class="message" role="status">${flash.message}</div>
         </g:if>
@@ -105,7 +109,7 @@
                                 name= "especializacion.id"
                                 from= "[]"
                                 optionKey= "id"
-                                noSelection= "[null: ' - Elige una especialidad - ']"
+                                noSelection= "['': ' - Elige una especialidad - ']"
                         />
                 </div>
             </fieldset>

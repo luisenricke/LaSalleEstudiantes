@@ -2,6 +2,8 @@ package lasalleestudiantes
 
 import grails.validation.ValidationException
 import org.grails.taglib.GrailsTagException
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.transaction.annotation.Transactional
 
 import javax.servlet.ServletException
 import java.lang.reflect.InvocationTargetException
@@ -22,8 +24,9 @@ class HomeController {
 
     def alert() {}
 
+    @Transactional
     def save() {
-        imprimirPeticion(params)
+        //imprimirPeticion(params)
 
         def estudiante = new Estudiante()
         estudiante.setNombre(params.estudiante.nombre)
@@ -32,28 +35,63 @@ class HomeController {
         estudiante.setMatricula(params.estudiante.matricula)
         estudiante.setCorreo(params.estudiante.correo)
         estudiante.setContrasenia(params.estudiante.contrasenia)
+        def nivelacademicoid =  params.nivelAcademico.id as Integer
+        def semestre =  params.historial.semestre as Integer
 
-        if (!estudiante.save()) {
-            // Checa los posibles errores sin guardar la indormación
-            estudiante.errors.allErrors.each {
-                if (it.arguments.contains("matricula") && estudiante.getMatricula().length() == 9) {
-                    redirect action: "alert", method: "GET"
-                    return
-                }
-            }
+        int especializacionid = 0
+        try {
+             especializacionid = params.especializacion.id as Integer
+        }catch(NumberFormatException | NullPointerException e) {
+            println "No se selecciono ninguna especialidad"
         }
 
-        try {
-            estudianteService.save(estudiante)
-        } catch (ValidationException e) {
+        // Verificar si ya está registrado y lanzar la alerta
+        def _estudiante = Estudiante.findByMatricula(estudiante.getMatricula())
+        if (_estudiante != null) {
+            redirect action: "alert", method: "GET"
+            return
+        }
+
+        // Validar todos los campos
+        if (!estudiante.validate()) {
             respond estudiante.errors, view: 'register'
             return
         }
 
+        // Validar que sea de primer semestre
+        if (semestre != 1) {
+            render view: 'register', model: [error_semestre: "Únicamente los alumnos de primer semestre se pueden registrar"]
+            return
+        }
+
+        // Validar que haya seleccionado una especialidad si existe alguna relación con NivelAcademico
+        def academia = nivelAcademicoService.get(nivelacademicoid)
+        def especializaciones = academia.especializaciones as List
+        if (!especializaciones.isEmpty() && especializacionid == 0) {
+            render view: 'register', model: [error_semestre: "Para el nivel académico que estas cursando debes seleccionar una especialidad"]
+            return
+        }
+
+        // Insertar
+        estudianteService.save(estudiante)
+
+        def historial = new HistorialAcademico()
+        historial.setEstudiante(estudiante)
+        historial.setNivelAcademico(academia)
+        if(!especializaciones.isEmpty()) {
+            def especializacion = especializacionService.get(especializacionid)
+            historial.setEspecializacion(especializacion)
+        }
+        historial.setSemestre(semestre)
+        historial.setTrunco(false)
+        historial.setInscrito_en(new Date())
+
+        historialAcademicoService.save(historial)
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), estudiante.id])
-                redirect estudiante
+                redirect controller: "home", action: "index", method: "GET"
             }
             '*' { respond estudiante, [status: CREATED] }
         }
@@ -83,9 +121,9 @@ class HomeController {
                     name: 'especializacion-id',
                     from: especializaciones,
                     optionKey: 'id',
-                    noSelection: [null: ' - Elige una especialidad - '])
+                    noSelection: ['': ' - Elige una especialidad - '])
         } catch (NullPointerException | GrailsTagException | InvocationTargetException ex) {
-            render g.select(id: 'especializacion-id', name: 'especializacion-id', from: [], optionKey: 'id', noSelection: [null: ' - Elige una especialidad - '])
+            render g.select(id: 'especializacion-id', name: 'especializacion-id', from: [], optionKey: 'id', noSelection: ['': ' - Elige una especialidad - '])
         }
     }
 
@@ -97,7 +135,7 @@ class HomeController {
         println "correo ${params.estudiante.correo}"
         println "contraseñ ${params.estudiante.contrasenia}"
         println "nivelacademico ${params.nivelAcademico.id}"
-        println "especializacion ${params.especializacion.id as String}"
+        println "especializacion ${params.especializacion.id}"
         println "semestre ${params.historial.semestre}"
     }
 }
