@@ -7,6 +7,7 @@ class Estudiante {
     String materno
     String matricula
     String correo
+    String contrasenia
 
     static hasMany = [historialesAcademicos: HistorialAcademico]
 
@@ -16,6 +17,7 @@ class Estudiante {
         materno size: 2..70, blank: false
         matricula size: 9..9, blank: false, unique: true
         correo email: true, blank: false, unique: true
+        contrasenia minSize: 8, password: true, blank: false
     }
 
     String toString() {

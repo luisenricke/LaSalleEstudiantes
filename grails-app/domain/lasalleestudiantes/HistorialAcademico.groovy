@@ -14,8 +14,9 @@ class HistorialAcademico {
 
     static constraints = {
         semestre range: 1..15, blank: false
-        finalizado_en nullable: true
         especializacion nullable: true
+        finalizado_en nullable: true, format: 'dd-MM-yyyy', max: new Date()
+        inscrito_en format: 'dd-MM-yyyy', max: new Date()
     }
 
     String toString() {
