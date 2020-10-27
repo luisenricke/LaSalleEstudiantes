@@ -34,6 +34,7 @@ class BootStrap {
         _estudiante.setMaterno("Meléndez")
         _estudiante.setMatricula("123456789")
         _estudiante.setCorreo("luisvillalobosmelendez@outlook.com")
+        _estudiante.setContrasenia("123456789")
         _estudiante.save()
     }
 }
