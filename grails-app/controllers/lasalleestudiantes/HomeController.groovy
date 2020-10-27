@@ -18,17 +18,45 @@ class HomeController {
 
     def index() {}
 
-    def register() {
+    def register() {}
 
-    }
+    def alert() {}
 
     def save() {
-        try {
-            imprimirPeticion(params)
-        } catch (ServletException e) {
+        imprimirPeticion(params)
 
+        def estudiante = new Estudiante()
+        estudiante.setNombre(params.estudiante.nombre)
+        estudiante.setPaterno(params.estudiante.paterno)
+        estudiante.setMaterno(params.estudiante.materno)
+        estudiante.setMatricula(params.estudiante.matricula)
+        estudiante.setCorreo(params.estudiante.correo)
+        estudiante.setContrasenia(params.estudiante.contrasenia)
+
+        if (!estudiante.save()) {
+            // Checa los posibles errores sin guardar la indormación
+            estudiante.errors.allErrors.each {
+                if (it.arguments.contains("matricula") && estudiante.getMatricula().length() == 9) {
+                    redirect action: "alert", method: "GET"
+                    return
+                }
+            }
         }
-        redirect action: "index", method: "GET"
+
+        try {
+            estudianteService.save(estudiante)
+        } catch (ValidationException e) {
+            respond estudiante.errors, view: 'register'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), estudiante.id])
+                redirect estudiante
+            }
+            '*' { respond estudiante, [status: CREATED] }
+        }
     }
 
     protected void notFound() {

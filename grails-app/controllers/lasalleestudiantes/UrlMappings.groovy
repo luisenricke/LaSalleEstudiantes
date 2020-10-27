@@ -14,5 +14,6 @@ class UrlMappings {
         "404"(view:'/notFound')
 
         "/register"(controller:"home", action:"register")
+        "/alert"(controller:"home", action:"alert")
     }
 }
