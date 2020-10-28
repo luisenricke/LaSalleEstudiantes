@@ -73,6 +73,7 @@
         </ul>
 
         <p style="text-align:left;margin-top:8px;">Para las demás tablas se podrá manejar todas las operaciones de un CRUD básico con /{nombre-tabla}/{operacion}/{id}</p>
+        <p style="text-align:left;margin-top:8px;">Por motivos prácticos  utilice H2 como fuente de datos, se le lleno con los registros requeridos de niveles académicos y especialidades junto con un alumno de prueba </p>
 
         <div class="w-100"></div>
 
