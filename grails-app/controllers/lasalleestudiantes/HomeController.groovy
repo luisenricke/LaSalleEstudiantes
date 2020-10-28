@@ -1,5 +1,6 @@
 package lasalleestudiantes
 
+import grails.plugins.mail.MailService
 import grails.validation.ValidationException
 import org.grails.taglib.GrailsTagException
 import org.springframework.dao.DataIntegrityViolationException
@@ -35,13 +36,13 @@ class HomeController {
         estudiante.setMatricula(params.estudiante.matricula)
         estudiante.setCorreo(params.estudiante.correo)
         estudiante.setContrasenia(params.estudiante.contrasenia)
-        def nivelacademicoid =  params.nivelAcademico.id as Integer
-        def semestre =  params.historial.semestre as Integer
+        def nivelacademicoid = params.nivelAcademico.id as Integer
+        def semestre = params.historial.semestre as Integer
 
         int especializacionid = 0
         try {
-             especializacionid = params.especializacion.id as Integer
-        }catch(NumberFormatException | NullPointerException e) {
+            especializacionid = params.especializacion.id as Integer
+        } catch (NumberFormatException | NullPointerException e) {
             println "No se selecciono ninguna especialidad"
         }
 
@@ -78,7 +79,7 @@ class HomeController {
         def historial = new HistorialAcademico()
         historial.setEstudiante(estudiante)
         historial.setNivelAcademico(academia)
-        if(!especializaciones.isEmpty()) {
+        if (!especializaciones.isEmpty()) {
             def especializacion = especializacionService.get(especializacionid)
             historial.setEspecializacion(especializacion)
         }
