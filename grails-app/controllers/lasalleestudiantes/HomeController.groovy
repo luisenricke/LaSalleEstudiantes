@@ -1,13 +1,17 @@
 package lasalleestudiantes
 
-import grails.plugins.mail.MailService
-import grails.validation.ValidationException
 import org.grails.taglib.GrailsTagException
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.annotation.Transactional
 
-import javax.servlet.ServletException
 import java.lang.reflect.InvocationTargetException
+
+import javax.mail.Message
+import javax.mail.MessagingException
+import javax.mail.PasswordAuthentication
+import javax.mail.Session
+import javax.mail.Transport
+import javax.mail.internet.InternetAddress
+import javax.mail.internet.MimeMessage
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -89,6 +93,8 @@ class HomeController {
 
         historialAcademicoService.save(historial)
 
+        enviarInformacion(historial, semestre)
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'estudiante.label', default: 'Estudiante'), estudiante.id])
@@ -105,6 +111,29 @@ class HomeController {
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NOT_FOUND }
+        }
+    }
+
+    def enviarInformacion(HistorialAcademico historial, int semestre) {
+        Estudiante estudiante = estudianteService.get(historial.getEstudiante().getId())
+        NivelAcademico academia = nivelAcademicoService.get(historial.getNivelAcademico().getId())
+        Especializacion especializacion = especializacionService.get(historial?.getEspecializacion()?.getId())
+
+        def mensaje = """
+                |<h1>Bienvenido a la escuela</h1><br>
+                |<p>Te deseamos todo lo mejor en esta nueva etapa de tu vida y agradecemos tu preferencia.</p><br>
+                |<p>Este correo es de acuse de recibo de tu información. No es necesario contestarlo<p/><br>
+                |<p>${academia.getNombre()} ${especializacion?.getNombre() ?: ''} semenstre: ${semestre}</p><br>
+                |<p>Nombre: ${estudiante.getNombre()} ${estudiante.getPaterno()} ${estudiante.getMaterno()}</p><br>
+                |<p>Matrícula: ${estudiante.getMatricula()}</p><br>
+                |<p>Correo: ${estudiante.getCorreo()}</p><br>
+                |<p>Contraseña: ${estudiante.getContrasenia()}</p><br>
+            """.stripMargin('|')
+
+        try {
+            mailtrap("luisevm24@outlook.com", estudiante.getCorreo(), "La Salle Oaxaca", mensaje)
+        } catch (Exception e) {
+            println "No se envio el correo"
         }
     }
 
@@ -126,6 +155,35 @@ class HomeController {
         } catch (NullPointerException | GrailsTagException | InvocationTargetException ex) {
             render g.select(id: 'especializacion-id', name: 'especializacion-id', from: [], optionKey: 'id', noSelection: ['': ' - Elige una especialidad - '])
         }
+    }
+
+    def mailtrap(String from, String to, String subject, String content) throws MessagingException {
+        String username = "" // Change it for your credentials
+        String password = "" // Change it for your credentials
+        String host = "smtp.mailtrap.io" //provide mailtrap's host address
+
+        Properties props = new Properties() //configure mailtrap's SMTP server details
+        props.put("mail.smtp.auth", "true")
+        props.put("mail.smtp.starttls.enable", "true")
+        props.put("mail.smtp.host", host)
+        props.put("mail.smtp.port", "587")
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password)
+            }
+        })
+
+        Message message = new MimeMessage(session)
+
+        message.setFrom(new InternetAddress(from))
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
+
+        message.setSubject(subject)
+        message.setText(subject)
+        message.setContent(content, "text/html; charset=utf-8")
+
+        Transport.send(message)
     }
 
     def imprimirPeticion(params) {
